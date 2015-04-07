@@ -123,3 +123,26 @@ index_t independent_domination_number(const graph& g)
 
 	return *std::min_element(doms.cbegin(), doms.cend(), [](index_t x, index_t y) { return __popcnt64(x) < __popcnt64(y); });
 }
+
+template <typename OutputIterator>
+void greedy_coloring(const graph& g, OutputIterator out)
+{
+	std::vector<index_t> coloring(g.num_vertices(), unassigned);
+
+	for (index_t i = 0; i < g.num_vertices(); ++i)
+	{
+		index_t adj = g.adj_[i];
+		index_t palette = std::numeric_limits<index_t>::max();
+
+		for (unsigned long j; adj != 0; adj &= ~(1 << j))
+		{
+			_BitScanForward64(&j, adj);
+			palette &= ~(1 << coloring[j]);
+		}
+
+		unsigned long c;
+		_BitScanForward64(&c, palette);
+		coloring[i] = c; 
+		*out = c;
+	}
+}
